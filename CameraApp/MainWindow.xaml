@@ -8,8 +8,24 @@
     Title="MainWindow"
     Width="800"
     Height="450"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Grid>
-        <TextBlock x:Name="MyTextBlock" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="MyTextBlock" Grid.Row="0" />
+        <Border
+            Grid.Row="1"
+            BorderBrush="Black"
+            BorderThickness="1">
+            <Image
+                x:Name="MyImage"
+                MinWidth="640"
+                MinHeight="480"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch" />
+        </Border>
     </Grid>
 </Window>
