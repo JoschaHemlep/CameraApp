@@ -1,2 +1,2 @@
 # CameraApp
-WPF .net5 Camera APP
+WPF .net5 camera app
