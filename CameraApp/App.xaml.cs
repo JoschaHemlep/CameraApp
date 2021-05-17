@@ -39,7 +39,8 @@ namespace CameraApp
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Configuration);
-            services.AddTransient<MainWindow>(_ => new MainWindow(Configuration));
+            services.AddSingleton<IMainViewModel, MainViewModel>();
+            services.AddTransient(_ => new MainWindow(_.GetRequiredService<IMainViewModel>()));
         }
     }
 }
