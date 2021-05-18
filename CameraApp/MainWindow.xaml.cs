@@ -24,13 +24,10 @@ namespace CameraApp
             try
             {
                 var connectionString = ViewModel.Configuration.GetConnectionString("MyDatabase");
-
-                MyTextBlock.Text += $"connectionString: {connectionString}\n";
             }
             catch (Exception)
             {
                 Console.WriteLine("Error reading app settings");
-                MyTextBlock.Text += "Error reading app settings.\n";
             }
         }
 
