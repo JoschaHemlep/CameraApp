@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CameraApp.Views;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.IO;
@@ -40,7 +41,7 @@ namespace CameraApp
         {
             services.AddSingleton(Configuration);
             services.AddSingleton<IMainViewModel, MainViewModel>();
-            services.AddTransient(_ => new MainWindow(_.GetRequiredService<IMainViewModel>()));
+            services.AddTransient<MainWindow>();
         }
     }
 }

@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace CameraApp
+namespace CameraApp.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -37,22 +37,6 @@ namespace CameraApp
 
             // ToDo: Change connectionstring in selected camera
             ReadConnectionstring();
-            try
-            {
-                var photo = await ViewModel.CapturePhoto();
-
-                Dispatcher.Invoke(() =>
-                {
-                    MyImage.Source = photo;
-                });
-            }
-            catch (NotSupportedException ex)
-            {
-                MessageBox.Show($"Error: {ex.Message}",
-                    caption: "Error",
-                    button: MessageBoxButton.OK,
-                    icon: MessageBoxImage.Error);
-            }
         }
     }
 }

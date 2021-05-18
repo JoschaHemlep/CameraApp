@@ -9,13 +9,16 @@ using Windows.Media.MediaProperties;
 using Windows.Storage.Streams;
 using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
 using System.IO;
+using System.Windows.Input;
+using CameraApp.Common;
 
-namespace CameraApp
+namespace CameraApp.Views
 {
     public class MainViewModel : BaseViewModel, IMainViewModel
     {
         private DeviceInformation selectedCamera;
         private DeviceInformationCollection cameras;
+        private BitmapImage photo;
 
         public IConfiguration Configuration { get; }
 
@@ -25,9 +28,43 @@ namespace CameraApp
         /// <inheritdoc />
         public DeviceInformationCollection Cameras { get => cameras; set => SetAndNotifyIfChanged(ref cameras, value); }
 
+        public BitmapImage Photo
+        {
+            get => photo; set
+            {
+                if (photo != value)
+                {
+                    photo = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        public ICommand CapturePhotoCommand { get; set; }
+        public ICommand SwitchCameraCommand { get; set; }
+
         public MainViewModel(IConfiguration configuration)
         {
             Configuration = configuration;
+            CapturePhotoCommand = new AsyncCommand(CapturePhoto, CanCapturePhotoCommand);
+            SwitchCameraCommand = new AsyncCommand(SwitchCamera);
+        }
+
+        private bool CanCapturePhotoCommand()
+        {
+            return SelectedCamera != null;
+        }
+
+        private Task SwitchCamera(object parameter)
+        {
+            throw new NotImplementedException();
+        }
+
+        private async Task CapturePhoto(object parameter)
+        {
+            var photo = await CapturePhoto();
+
+            Photo = photo;
         }
 
         /// <inheritdoc />

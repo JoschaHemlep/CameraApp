@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Windows.Devices.Enumeration;
 
-namespace CameraApp
+namespace CameraApp.Views
 {
     /// <summary>
     /// ViewModel for <see cref="MainWindow"/>
@@ -27,6 +28,9 @@ namespace CameraApp
         /// </summary>
         Task Initialize();
 
-        Task<BitmapImage> CapturePhoto();
+        BitmapImage Photo { get; }
+
+        ICommand CapturePhotoCommand { get; }
+        ICommand SwitchCameraCommand { get; }
     }
 }

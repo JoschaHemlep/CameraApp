@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace CameraApp
+namespace CameraApp.Common
 {
     /// <summary>
     /// Base class for ViewModels
