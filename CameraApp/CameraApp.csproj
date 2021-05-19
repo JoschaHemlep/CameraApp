@@ -4,6 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows10.0.19041.0</TargetFramework>
     <UseWPF>true</UseWPF>
+    <Authors>Joscha Hemlep</Authors>
+    <Description>WPF .net5 camera app</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/JoschaHemlep/CameraApp</PackageProjectUrl>
+    <Company />
+    <StartupObject>CameraApp.App</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +23,10 @@
   <ItemGroup>
     <None Update="appSettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
     </None>
   </ItemGroup>
 </Project>
