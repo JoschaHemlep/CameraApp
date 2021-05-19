@@ -1,4 +1,5 @@
-﻿using CameraApp.Views;
+﻿using CameraApp.Services;
+using CameraApp.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -46,6 +47,7 @@ namespace CameraApp
         private void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton(Configuration);
+            services.AddSingleton<IPhotoCaptureService, PhotoCaptureService>();
             services.AddSingleton<IMainViewModel, MainViewModel>();
             services.AddTransient<MainWindow>();
         }

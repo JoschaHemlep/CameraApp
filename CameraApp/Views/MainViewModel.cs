@@ -11,6 +11,7 @@ using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
 using System.IO;
 using System.Windows.Input;
 using CameraApp.Common;
+using CameraApp.Services;
 
 namespace CameraApp.Views
 {
@@ -19,6 +20,8 @@ namespace CameraApp.Views
         private DeviceInformation selectedCamera;
         private DeviceInformationCollection cameras;
         private BitmapImage photo;
+        private MediaCapture mediaCapture;
+        private readonly IPhotoCaptureService photoCaptureService;
 
         public IConfiguration Configuration { get; }
 
@@ -61,8 +64,9 @@ namespace CameraApp.Views
 
         ICommand IMainViewModel.SwitchCameraCommand => SwitchCameraCommand;
 
-        public MainViewModel(IConfiguration configuration)
+        public MainViewModel(IPhotoCaptureService photoCaptureService, IConfiguration configuration)
         {
+            this.photoCaptureService = photoCaptureService;
             Configuration = configuration;
             CapturePhotoCommand = new AsyncCommand(CapturePhoto, CanCapturePhotoCommand);
             SwitchCameraCommand = new AsyncCommand(SwitchCamera, CanSwitchCameraCommand);
@@ -116,6 +120,8 @@ namespace CameraApp.Views
             }
 
             SelectedCamera = Cameras[selectedCameraIndex];
+
+            mediaCapture = await photoCaptureService.GetMediaCapture(SelectedCamera.Id);
         }
 
         public async Task<BitmapImage> CapturePhoto()
@@ -125,60 +131,16 @@ namespace CameraApp.Views
                 throw new NotSupportedException("No camera selected");
             }
 
-            var mediaCapture = await GetMediaCapture();
-            var photo = await CapturePhoto(mediaCapture);
-            var bitmapImage = await ToBitmapImage(photo);
+            if(mediaCapture == null)
+            {
+                mediaCapture = await photoCaptureService.GetMediaCapture(SelectedCamera.Id);
+            }
+            var photo = await photoCaptureService.CapturePhoto(mediaCapture);
+            var bitmapImage = await photoCaptureService.ToBitmapImage(photo);
 
             return bitmapImage;
         }
 
-        public async Task<MediaCapture> GetMediaCapture()
-        {
-            var settings = new MediaCaptureInitializationSettings
-            {
-                VideoDeviceId = SelectedCamera.Id
-            };
 
-            var mediaCapture = new MediaCapture();
-            await mediaCapture.InitializeAsync(settings);
-
-            return mediaCapture;
-        }
-
-        public async Task<SoftwareBitmap> CapturePhoto(MediaCapture mediaCapture)
-        {
-            using (var captureStream = new InMemoryRandomAccessStream())
-            {
-                await mediaCapture.CapturePhotoToStreamAsync(ImageEncodingProperties.CreateBmp(), captureStream);
-
-                var lowLagCapture = await mediaCapture.PrepareLowLagPhotoCaptureAsync(ImageEncodingProperties.CreateUncompressed(MediaPixelFormat.Bgra8));
-
-                var capturedPhoto = await lowLagCapture.CaptureAsync();
-                var softwareBitmap = capturedPhoto.Frame.SoftwareBitmap;
-                await lowLagCapture.FinishAsync();
-
-                return softwareBitmap;
-            }
-        }
-
-        public async Task<BitmapImage> ToBitmapImage(SoftwareBitmap softwareBitmap)
-        {
-            using (var bitmapImageStream = new InMemoryRandomAccessStream())
-            {
-                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, bitmapImageStream);
-                encoder.SetSoftwareBitmap(softwareBitmap);
-                await encoder.FlushAsync();
-
-                var bitmapImage = new BitmapImage();
-
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = bitmapImageStream.AsStream();
-                bitmapImage.EndInit();
-                bitmapImage.Freeze();
-
-                return bitmapImage;
-            }
-        }
     }
 }
