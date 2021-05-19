@@ -100,7 +100,22 @@ namespace CameraApp.Views
                 return;
             }
 
-            SelectedCamera = Cameras[0];
+            int selectedCameraIndex = 0;
+
+            try
+            {
+                selectedCameraIndex = int.Parse(Configuration["SelectedCamera"]);
+                if(selectedCameraIndex > Cameras.Count - 1)
+                {
+                    selectedCameraIndex = 0;
+                }
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Error reading app settings");
+            }
+
+            SelectedCamera = Cameras[selectedCameraIndex];
         }
 
         public async Task<BitmapImage> CapturePhoto()

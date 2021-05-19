@@ -18,23 +18,29 @@ namespace CameraApp
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            var builder = new ConfigurationBuilder()
-             .SetBasePath(Directory.GetCurrentDirectory())
-             .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true);
-
-            Configuration = builder.Build();
-
-            var connectionString = Configuration.GetConnectionString("MyDatabase");
-
-            Console.WriteLine(connectionString);
+            Configuration = BuildConfiguration();
 
             var serviceCollection = new ServiceCollection();
             ConfigureServices(serviceCollection);
 
             ServiceProvider = serviceCollection.BuildServiceProvider();
 
+            ShowWindow();
+        }
+
+        private void ShowWindow()
+        {
             var mainWindow = ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow.Show();
+        }
+
+        private IConfiguration BuildConfiguration()
+        {
+            var builder = new ConfigurationBuilder()
+             .SetBasePath(Directory.GetCurrentDirectory())
+             .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true);
+
+            return builder.Build();
         }
 
         private void ConfigureServices(IServiceCollection services)
