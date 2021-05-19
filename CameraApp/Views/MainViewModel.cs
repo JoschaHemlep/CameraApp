@@ -47,7 +47,12 @@ namespace CameraApp.Views
         {
             Configuration = configuration;
             CapturePhotoCommand = new AsyncCommand(CapturePhoto, CanCapturePhotoCommand);
-            SwitchCameraCommand = new AsyncCommand(SwitchCamera);
+            SwitchCameraCommand = new AsyncCommand(SwitchCamera, CanSwitchCameraCommand);
+        }
+
+        private bool CanSwitchCameraCommand()
+        {
+            return Cameras != null && Cameras.Count > 1;
         }
 
         private bool CanCapturePhotoCommand()
