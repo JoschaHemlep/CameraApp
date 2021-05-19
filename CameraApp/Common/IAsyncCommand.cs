@@ -8,5 +8,7 @@ namespace CameraApp.Common
         Task ExecuteAsync(object parameter);
 
         bool CanExecute();
+
+        void RaiseCanExecuteChanged();
     }
 }

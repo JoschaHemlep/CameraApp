@@ -23,10 +23,24 @@ namespace CameraApp.Views
         public IConfiguration Configuration { get; }
 
         /// <inheritdoc />
-        public DeviceInformation SelectedCamera { get => selectedCamera; set => SetAndNotifyIfChanged(ref selectedCamera, value); }
+        public DeviceInformation SelectedCamera
+        {
+            get => selectedCamera; set
+            {
+                SetAndNotifyIfChanged(ref selectedCamera, value);
+                CapturePhotoCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         /// <inheritdoc />
-        public DeviceInformationCollection Cameras { get => cameras; set => SetAndNotifyIfChanged(ref cameras, value); }
+        public DeviceInformationCollection Cameras
+        {
+            get => cameras; set
+            {
+                SetAndNotifyIfChanged(ref cameras, value);
+                SwitchCameraCommand.RaiseCanExecuteChanged();
+            }
+        }
 
         public BitmapImage Photo
         {
@@ -40,8 +54,12 @@ namespace CameraApp.Views
             }
         }
 
-        public ICommand CapturePhotoCommand { get; set; }
-        public ICommand SwitchCameraCommand { get; set; }
+        public IAsyncCommand CapturePhotoCommand { get; set; }
+        public IAsyncCommand SwitchCameraCommand { get; set; }
+
+        ICommand IMainViewModel.CapturePhotoCommand => CapturePhotoCommand;
+
+        ICommand IMainViewModel.SwitchCameraCommand => SwitchCameraCommand;
 
         public MainViewModel(IConfiguration configuration)
         {
