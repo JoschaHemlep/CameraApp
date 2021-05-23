@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -59,8 +60,9 @@ namespace CameraApp.Common
             {
                 await ExecuteAsync(parameter);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Debug.WriteLine(e.Message);
                 // ToDo: Handle Exceptions
             }
         }

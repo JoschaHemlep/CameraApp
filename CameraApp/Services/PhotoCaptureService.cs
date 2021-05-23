@@ -12,16 +12,16 @@ namespace CameraApp.Services
 {
     public class PhotoCaptureService : IPhotoCaptureService
     {
+        private readonly MediaCaptureInitializationSettings settings = new()
+        {
+            StreamingCaptureMode = StreamingCaptureMode.Video,
+            MediaCategory = MediaCategory.Media
+        };
+
         public async Task<MediaCapture> GetMediaCapture(string videoDeviceId)
         {
-            var settings = new MediaCaptureInitializationSettings
-            {
-                VideoDeviceId = videoDeviceId,
-                StreamingCaptureMode = StreamingCaptureMode.Video,
-                MediaCategory = MediaCategory.Media
-            };
-
             var mediaCapture = new MediaCapture();
+            settings.VideoDeviceId = videoDeviceId;
             await mediaCapture.InitializeAsync(settings);
 
             return mediaCapture;
@@ -47,7 +47,7 @@ namespace CameraApp.Services
         {
             using (var bitmapImageStream = new InMemoryRandomAccessStream())
             {
-                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, bitmapImageStream);
+                BitmapEncoder encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.BmpEncoderId, bitmapImageStream);
                 encoder.SetSoftwareBitmap(softwareBitmap);
                 await encoder.FlushAsync();
 
@@ -55,7 +55,7 @@ namespace CameraApp.Services
 
                 bitmapImage.BeginInit();
                 bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = bitmapImageStream.AsStream();
+                bitmapImage.StreamSource = bitmapImageStream.AsStreamForRead();
                 bitmapImage.EndInit();
                 bitmapImage.Freeze();
 

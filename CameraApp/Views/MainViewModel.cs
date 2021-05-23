@@ -3,12 +3,6 @@ using System;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 using Windows.Devices.Enumeration;
-using Windows.Graphics.Imaging;
-using Windows.Media.Capture;
-using Windows.Media.MediaProperties;
-using Windows.Storage.Streams;
-using BitmapEncoder = Windows.Graphics.Imaging.BitmapEncoder;
-using System.IO;
 using System.Windows.Input;
 using CameraApp.Common;
 using CameraApp.Services;
@@ -20,7 +14,7 @@ namespace CameraApp.Views
         private DeviceInformation selectedCamera;
         private DeviceInformationCollection cameras;
         private BitmapImage photo;
-        private MediaCapture mediaCapture;
+        private int selectedCameraIndex;
         private readonly IPhotoCaptureService photoCaptureService;
 
         public IConfiguration Configuration { get; }
@@ -84,7 +78,15 @@ namespace CameraApp.Views
 
         private Task SwitchCamera(object parameter)
         {
-            throw new NotImplementedException();
+            var newSelectedIndex = selectedCameraIndex + 1;
+            if(Cameras.Count < newSelectedIndex + 1)
+            {
+                newSelectedIndex = 0;
+            }
+            SelectedCamera = Cameras[newSelectedIndex];
+            selectedCameraIndex = newSelectedIndex;
+
+            return Task.CompletedTask;
         }
 
         private async Task CapturePhoto(object parameter)
@@ -104,7 +106,7 @@ namespace CameraApp.Views
                 return;
             }
 
-            int selectedCameraIndex = 0;
+            selectedCameraIndex = 0;
 
             try
             {
@@ -120,9 +122,8 @@ namespace CameraApp.Views
             }
 
             SelectedCamera = Cameras[selectedCameraIndex];
-
-            mediaCapture = await photoCaptureService.GetMediaCapture(SelectedCamera.Id);
         }
+
 
         public async Task<BitmapImage> CapturePhoto()
         {
@@ -131,14 +132,12 @@ namespace CameraApp.Views
                 throw new NotSupportedException("No camera selected");
             }
 
-            if(mediaCapture == null)
+            using (var mediaCapture = await photoCaptureService.GetMediaCapture(SelectedCamera.Id))
             {
-                mediaCapture = await photoCaptureService.GetMediaCapture(SelectedCamera.Id);
+                var photo = await photoCaptureService.CapturePhoto(mediaCapture);
+                var bitmapImage = await photoCaptureService.ToBitmapImage(photo);
+                return bitmapImage;
             }
-            var photo = await photoCaptureService.CapturePhoto(mediaCapture);
-            var bitmapImage = await photoCaptureService.ToBitmapImage(photo);
-
-            return bitmapImage;
         }
 
 
